@@ -1,3 +1,9 @@
+/*
+ * https://developer.adobe.com/stock/docs/getting-started/apps/05-search-for-assets/#tips-and-techniques
+ * https://developer.adobe.com/stock/docs/api/11-search-reference/
+ * 
+ */
+require('dotenv').config();
 const listenPort = 6301;
 const hostname = 'adobe.pymnts.com'
 const privateKeyPath = `/etc/letsencrypt/live/${hostname}/privkey.pem`;
@@ -7,6 +13,10 @@ const express = require('express');
 const https = require('https');
 const cors = require('cors');
 const fs = require('fs');
+const axios = require('axios');
+
+const { ADOBE_API_KEY } = process.env;
+
 
 const app = express();
 app.use(express.static('public'));
@@ -28,3 +38,27 @@ const httpsServer = https.createServer({
 });
 
 
+const test = async () => {
+    let request = {
+        // url: `  https://stock.adobe.io/Rest/Media/1/Search/Files?search_parameters[words]=purple+clouds&locale=en_US`,
+        url: `https://stock.adobe.io/Rest/Media/1/Search/Files`,
+        method: 'get',
+        params: {
+            'search_parameters[words]': 'food delivery',
+            'locale': 'en_US'
+        },
+        headers: {
+            'x-api-key': ADOBE_API_KEY,
+            'x-product': 'Test Project'
+        }
+    }
+
+    try {
+        const response = await axios(request);
+        console.log(response.data);
+    } catch(err) {
+        console.error(err);
+    }
+}
+
+test();
